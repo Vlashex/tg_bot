@@ -1,22 +1,22 @@
 .UserList {
   background-color: #fff;
-  height: 100%;
-  width: 75px;
+  height: 75px;
+  width: 100%;
   padding: 0 10px;
   box-sizing: border-box;
   display: flex;
-  flex-direction: column;
   justify-content: flex-start;
-  overflow: scroll;
+  overflow-x: scroll;
+  align-items: center;
 }
 .UserList img {
   display: block;
   min-height: 50px;
   background-color: #505050;
   border-radius: 50%;
-  width: 50px;
+  min-width: 50px;
   height: 50px;
-  margin: 10px 0;
+  margin: 0 10px;
 }
 
 /*# sourceMappingURL=user-list.css.map */

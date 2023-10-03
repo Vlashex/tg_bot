@@ -5,7 +5,7 @@ const SendMessage = () => {
         <div className="send-message">
             <form action="">
                 <input type="text"/>
-                <button type="submit">Send Massage</button>
+                <button type="submit">New task</button>
             </form>
         </div>
     );

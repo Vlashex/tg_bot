@@ -10,12 +10,16 @@ function App() {
         <UserList/>
         <div>
             <div className="task-list">
-                <Task></Task>
-                <Task></Task>
-                <Task></Task>
-                <Task></Task>
-                <Task></Task>
-                <Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task>
+                <Task/>
+                <Task/>
+                <Task/>
+                <Task/>
+                <Task/>
+                <Task/>
+                <Task/>
+                <Task/>
+                <Task/>
+                <Task/>
             </div>
             <SendMessage></SendMessage>
         </div>

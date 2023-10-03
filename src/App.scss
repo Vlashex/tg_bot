@@ -7,9 +7,12 @@
   .wrapper{
     display: flex;
     height: 100%;
+    flex-direction: column;
+
 
     &>div:last-child{
-      width: calc(100% - 75px);
+      width: 100%;
+      height: calc(100% - 75px);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -70,7 +73,7 @@ body{
   margin: 0;
   box-sizing: border-box;
   padding: 0;
-  background: linear-gradient(107deg, rgba(0, 102, 0, 0.5) 0%, rgba(209,217,29,1) 51%, rgba(10, 146, 0, 0.5) 100%);
+  font-family: var(--tg-);
 
   #root{
     height: 100%;
