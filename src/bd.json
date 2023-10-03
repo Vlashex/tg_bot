@@ -1,0 +1,17 @@
+{
+  "user": {
+    "username": "ezsx",
+    "id": "0001"
+  },
+  "tasks": {
+    "id": "0001",
+    "content": "Make a progect",
+    "status": false
+  },
+  "user_tasks": {
+    "user_id": "0001",
+    "task_id": "0001",
+    "assigned_date": "",
+    "completed_date": ""
+  }
+}

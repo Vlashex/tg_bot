@@ -1,25 +1,27 @@
-import logo from './logo.svg';
 import './App.css';
+import UserList from './components/user-list'
+import Task from './components/task'
+import SendMessage from "./components/send-message";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="wrapper">
+        <UserList/>
+        <div>
+            <div className="task-list">
+                <Task></Task>
+                <Task></Task>
+                <Task></Task>
+                <Task></Task>
+                <Task></Task>
+                <Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task><Task></Task>
+            </div>
+            <SendMessage></SendMessage>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default App;
+export default App
