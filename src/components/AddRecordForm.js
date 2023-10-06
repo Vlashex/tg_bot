@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
 function AddRecordForm() {
     const [record, setRecord] = useState('');
@@ -6,7 +6,7 @@ function AddRecordForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const data = { record };
+        const data = {record};
 
         try {
             const response = await fetch('http://localhost:8000/add_records', {
