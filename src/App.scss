@@ -75,6 +75,7 @@ body {
         & > div:last-child {
           width: 100%;
           height: calc(100% - 40px);
+          background: var(--theme-bg-color, #222);
           flex-grow: 1;
           display: flex;
           flex-direction: column;

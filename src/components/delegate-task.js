@@ -1,32 +1,28 @@
 import React, {useState} from 'react';
-// import TelegramBot from 'node-telegram-bot-api';
-
-
-// const bot = new TelegramBot('YOUR_BOT_TOKEN', { polling: false });
 
 const DelegateTask = (props) => {
 
 
-    const data = props.data
-
-    const [A, setA] = useState(data.delegate_user_id)
-
-    const [userImg, setUserImg] = useState([])
-
     const [inputValue, setInputValue] = useState('');
+    const [userNames, setUserNames] = useState(props.username)
 
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
     };
 
+    const postDelegateToUsername = (name) => {
+        fetch(`http://127.0.0.1:8000/tasks/DelegateToUsername`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(name),
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.log(error))
+    }
 
-    const checkUserExists = async (username) => {
-        setUserImg(userImg => [...userImg, {
-            url: `https://t.me/i/userpic/320/${username}.jpg`,
-            username: username,
-            id: username
-        }]);
-    };
 
 
     return (
@@ -37,16 +33,14 @@ const DelegateTask = (props) => {
             <div className="task-form">
                 <div className="task-form-inner">
                     {
-                        userImg.map((element) => {
-                            const ID = element.id
+                        props.task.username.map((element) => {
+                            const ID = element
                             return (
-                                <div key={element.username} className="user">
-                                    <img src={element.url} alt="IMG"/>
-                                    <p>{element.username}</p>
+                                <div key={element} className="user">
+                                    <img src={`https://t.me/i/userpic/320/${element}.jpg`} alt="IMG"/>
+                                    <p>{element}</p>
                                     <button onClick={() => {
-                                        setUserImg(userImg.filter((element) => {
-                                            return element.id !== ID
-                                        }))
+                                        postDelegateToUsername(props.task.username.filter((element)=>{return element!==ID}))
                                     }}>Del
                                     </button>
                                 </div>
@@ -57,7 +51,7 @@ const DelegateTask = (props) => {
                         <input value={inputValue} onChange={handleInputChange} placeholder="username" type="text"/>
                         <button onClick={() => {
                             if (inputValue !== '') {
-                                checkUserExists(inputValue)
+                                setUserNames(userNames => [...userNames, inputValue])
                             }
                             setInputValue('')
                         }}>Add
@@ -65,11 +59,9 @@ const DelegateTask = (props) => {
                     </div>
                 </div>
                 <button onClick={() => {
-                    props.setTaskList(props.taskList.map((element) => {
-                        if (element.id === props.currentTaskId) {
-                            return {...data, delegate_user_id: A}
-                        } else return element
-                    }));
+                    postDelegateToUsername([...props.task.username, inputValue])
+                    props.getCreatedTasks()
+                    props.getDelegatedTasks()
                     props.toggle()
                 }}>Send
                 </button>

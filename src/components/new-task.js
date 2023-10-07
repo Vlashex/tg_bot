@@ -4,16 +4,16 @@ import {formatTime} from './formatTime'
 const NewTask = (props) => {
 
     const [newTask, setNewTask] = useState({
-        "id": 5,
-        "content": "",
-        "priority": '',
-        "date": null,
+        "delegated_to_username": [],
+        "created_by_username": props.username,
+        "deadline_date": null,
+        "content": '',
         "status": false,
-        "delegate_user_id": []
+        "priority": null
     })
 
-    const [dateInputValue, setDateInputValue] = useState();
-    const [timeInputValue, setTimeInputValue] = useState();
+    const [dateInputValue, setDateInputValue] = useState('');
+    const [timeInputValue, setTimeInputValue] = useState('');
 
     const handleTextInputChange = (event) => {
         setNewTask({...newTask, content: event.target.value});
@@ -24,6 +24,20 @@ const NewTask = (props) => {
     const handleTimeInputChange = (event) => {
         setTimeInputValue(event.target.value);
     };
+
+
+    const postNewTask = () => {
+        fetch(`http://127.0.0.1:8000/tasks/NewTask`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newTask),
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.log(error))
+    }
 
     return (
         <div className="task-form-wrapper">
@@ -58,11 +72,15 @@ const NewTask = (props) => {
                     </div>
                 </div>
                 <button onClick={() => {
-                    setNewTask({...newTask, date: `${dateInputValue} ${timeInputValue}`});
-                    if (newTask.content !== '' && newTask.priority !== '' && newTask.date) {
-                        props.setTaskList(taskList => [...taskList, newTask])
+                    setNewTask({...newTask, deadline_date: `${dateInputValue} ${timeInputValue}`});
+                    if ((newTask.content === '') && (newTask.priority === null) && !newTask.date) {
+                        alert('Check forms')
+                    } else {
+                        postNewTask()
+                        props.getCreatedTasks()
                         props.toggle()
-                    } else alert('Check forms')
+                        console.log(newTask)
+                    }
                 }}>Send
                 </button>
             </div>

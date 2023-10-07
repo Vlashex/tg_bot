@@ -6,39 +6,66 @@ import React, {useState} from 'react'
 import NewTask from "./components/new-task";
 import EditTask from "./components/edit-task";
 import DelegateTask from "./components/delegate-task";
-import dataBase from './bd.json'
 
 function App() {
 
-    const db = dataBase
 
-    const currentUserName = 'XZ7kto'
-
-    let userId = 0
-    db.users.forEach((element)=>{
-        if (element.username === currentUserName){userId = element.id}
-    })
+    const getCreatedTasksFunction = async () => {
+        fetch(`http://127.0.0.1:8000/tasks/CreatedTask`)
+            .then(data => setCreatedTasks(data))
+    }
+    const getDelegatedTasksFunction = async () => {
+        fetch(`http://127.0.0.1:8000/tasks/DelegatedTasks`)
+            .then(data => setReceivedTasks(data))
+    }
+    const getReceivedTasksFunction = async () => {
+        fetch(`http://127.0.0.1:8000/tasks/ReceivedTasks`)
+            .then(data => setDelegatedTasks(data))
+    }
 
 
     const [themeParams] = useThemeParams();
 
-    const [taskList, setTaskList] = useState(db.tasks)
+    const [createdTasks, setCreatedTasks] = useState(getCreatedTasksFunction())
 
-    const [sortedTaskList, setSortedTaskList] = useState(taskList)
+    const [receivedTasks, setReceivedTasks] = useState(getDelegatedTasksFunction())
+
+    const [delegatedTasks, setDelegatedTasks] = useState(getReceivedTasksFunction())
+
 
     const [isNewTask, setNewTask] = useState(false);
 
     const [isEditTask, setEditTask] = useState(false);
 
-    const [isImageVisible, setImageVisibility] = useState(false)
-
     const [whatTabSelected, setSelectedTab] = useState(1)
-
-    const [currentTaskId, choseTask] = useState(null)
 
     const [isDelegateTask, setDelegateTask] = useState(false)
 
     const [isTaskButton, setTaskButton] = useState(true)
+
+    const [chosenTasksId, setChosenTaskId] = useState('')
+
+
+    const renderTast = (element, isImgVisible) => {
+        return (<Task
+            key={element.task_id}
+            task={element}
+            isImageVisible={true}
+            chosenTasksId={chosenTasksId}
+            isTaskButton={isTaskButton}
+
+            choseTask={setChosenTaskId}
+            whatTabSelected={whatTabSelected}
+
+            toggleEdit={() => setEditTask(!isEditTask)}
+            toggleDelegate={() => setDelegateTask(!isDelegateTask)}
+            setTaskButton={()=>setTaskButton(!isTaskButton)}
+            getCreatedTasks={()=>getCreatedTasksFunction()}
+
+
+        />)
+    }
+
 
     return (
         <div className="App">
@@ -48,11 +75,6 @@ function App() {
                         <button style={whatTabSelected === 1 ? {color: themeParams.link_color || 'red'} : null}
                                 onClick={() => {
                                     setSelectedTab(1)
-                                    setImageVisibility(false)
-                                    setTaskButton(true)
-                                    setSortedTaskList(taskList.map((element) => {
-                                        return element
-                                    }))
                                 }}>Created
                         </button>
                         <div style={whatTabSelected === 1 ? {background: themeParams.link_color || 'red'} : null}
@@ -62,11 +84,6 @@ function App() {
                         <button style={whatTabSelected === 2 ? {color: themeParams.link_color || 'red'} : null}
                                 onClick={() => {
                                     setSelectedTab(2)
-                                    setImageVisibility(true)
-                                    setTaskButton(false)
-                                    setSortedTaskList(taskList.filter((element) => {
-                                        return element.create_id === userId
-                                    }))
                                 }}>Delegated
                         </button>
                         <div style={whatTabSelected === 2 ? {background: themeParams.link_color || 'red'} : null}
@@ -76,75 +93,56 @@ function App() {
                         <button style={whatTabSelected === 3 ? {color: themeParams.link_color || 'red'} : null}
                                 onClick={() => {
                                     setSelectedTab(3)
-                                    setImageVisibility(true)
-                                    setTaskButton(false)
-
-                                    setSortedTaskList(taskList.filter((element) => {
-                                        return element.create_id !== userId
-                                    }))
                                 }}>Received
                         </button>
                         <div style={whatTabSelected === 3 ? {background: themeParams.link_color || 'red'} : null}
                              className="half-sausage"/>
                     </div>
                 </div>
-                <div style={{background: themeParams.bg_color || '#222'}}>
+                <div>
                     <div className="task-list">
                         {
-                            taskList.map((element) => {
-                                return (<Task
-                                    key={element.id}
-                                    data={element}
-                                    isImageVisible={isImageVisible}
-                                    toggleEdit={() => {
-                                        setEditTask(!isEditTask)
-                                    }}
-                                    toggleDelegate={() => {
-                                        setDelegateTask(!isDelegateTask)
-                                    }}
-                                    choseTask={choseTask}
-                                    setTaskList={setTaskList}
-                                    taskList={taskList}
-                                    currentTaskId={currentTaskId}
-                                    isTaskButton={isTaskButton}
-                                />)
-                            })
+                            whatTabSelected === 1 ? createdTasks.map((element) => renderTast(element, false)) : null
+                        }
+                        {
+                            whatTabSelected === 2 ? delegatedTasks.map((element) => renderTast(element, true)) : null
+                        }
+                        {
+                            whatTabSelected === 3 ? receivedTasks.map((element) => renderTast(element, true)) : null
                         }
                     </div>
 
-
                     {isNewTask ? <NewTask
-                        toggle={() => {
-                            setNewTask(!isNewTask)
-                        }}
-                        setTaskList={setTaskList}
-                        taskList={taskList}
-
+                        toggle={() => setNewTask(!isNewTask)}
+                        getCreatedTasks={()=>getCreatedTasksFunction()}
+                        Id={chosenTasksId}
+                        username={
+                            createdTasks.filter((element)=>{return element.id===chosenTasksId}).delegated_to_username
+                        }
                     /> : null}
 
                     {isEditTask ? <EditTask
-                        data={taskList.filter((element) => {
-                            return element.id === currentTaskId;
-                        })[0]}
                         toggle={() => setEditTask(!isEditTask)}
-                        setTaskList={setTaskList}
-                        currentTaskId={currentTaskId}
-                        taskList={taskList}
+                        Id={chosenTasksId}
+                        getCreatedTasks={()=>getCreatedTasksFunction()}
+                        task={createdTasks.filter((element)=>{return element.id===chosenTasksId})}
+
+
                     /> : null}
 
 
                     {isDelegateTask ? <DelegateTask
-                        data={taskList.filter((element) => {
-                            return element.id === currentTaskId;
-                        })[0]}
-                        toggle={() => setDelegateTask(!isDelegateTask)}
-                        taskList={taskList}
-                        setTaskList={setTaskList}
-                        currentTaskId={currentTaskId}
+                        Id={chosenTasksId}
+                        getCreatedTasks={()=>getCreatedTasksFunction()}
+                        getDelegatedTasks={()=>getDelegatedTasksFunction()}
+                        username={
+                            createdTasks.filter((element)=>{return element.id===chosenTasksId}).delegated_to_username
+                        }
                     /> : null}
 
 
-                    {isTaskButton?<button onClick={() => setNewTask(!isNewTask)} className="send-button">New task</button>:null}
+                    {isTaskButton ?
+                        <button onClick={() => setNewTask(!isNewTask)} className="send-button">New task</button> : null}
 
 
                 </div>

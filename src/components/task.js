@@ -4,6 +4,32 @@ import {exactTime} from "./formatTime";
 
 const Task = (props) => {
 
+    const postDelete = () => {
+        fetch(`http://127.0.0.1:8000/tasks/Delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(props.task.id),
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.log(error))
+    }
+    const postStatus = () => {
+        fetch(`http://127.0.0.1:8000/tasks/Status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(props.task.id),
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.log(error))
+    }
+
+
     const A = (
         <div className="task-buttons">
             <button onClick={() => {
@@ -12,9 +38,8 @@ const Task = (props) => {
             </button>
             <button onClick={() => props.toggleDelegate()}>Delegate</button>
             <button onClick={() => {
-                props.setTaskList(props.taskList.filter((element) => {
-                    return element.id !== props.data.id;
-                }))
+                postDelete();
+                props.getCreatedTasks()
             }}>Delete
             </button>
         </div>)
@@ -22,28 +47,32 @@ const Task = (props) => {
     return (
         <div className="task">
             <div className="task-inner">
-                {props.isImageVisible ? <img src="" alt=""/> : null}
+                {props.isImageVisible ?
+                    <img src={
+                        props.whatTabSelected === 1 ? null : `https://t.me/i/userpic/320/${props.task.created_by_username}.jpg`
+                    } alt=""/>
+                    : null}
                 <div className="task-priority"/>
                 <div>
                     <div>
                         <p>{
-                            exactTime(props.data.assigned_date)
+                            props.whatTabSelected === 1 ? null : props.whatTabSelected === 2 ? props.task.delegated_to_username : props.task.created_by_username
+                        }</p>
+                        <p>{
+                            exactTime(props.task.deadline_date)
                         }</p>
                         <div onClick={() => {
-                            props.setTaskList(props.taskList.map((element)=>{
-                                if (element.id === props.data.id){
-                                    return {...element, status: !props.data.status}
-                                } else { return element }
-                            }))
-                        }} style={props.data.status?{background: "#79C063"} : null} className="task-check-box"/>
+                            postStatus();
+                            props.getCreatedTasks()
+                        }} style={props.task.status ? {background: "#79C063"} : null} className="task-check-box"/>
                     </div>
                     <p onClick={() => {
-                        props.currentTaskId === props.data.id ? props.choseTask(null) : props.choseTask(props.data.id)
-                    }}> {props.data.content || '404 Task content loading error'} </p>
+                        props.chosenTasksId === props.task.task_id ? props.choseTask(null) : props.choseTask(props.task.task_id)
+                    }}> {props.task.content || '404 Task content loading error'} </p>
                 </div>
             </div>
             {
-                (props.currentTaskId === props.data.id)&&props.isTaskButton ? A : null
+                (props.chosenTasksId === props.task.task_id) && props.isTaskButton ? A : null
             }
         </div>
     );

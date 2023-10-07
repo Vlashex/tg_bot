@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 
 const EditTask = (props) => {
 
-    const [editTask, setEditTask] = useState(props.data)
+    const [editTask, setEditTask] = useState(props.task)
 
     const [dateInputValue, setDateInputValue] = useState();
     const [timeInputValue, setTimeInputValue] = useState();
@@ -15,6 +15,18 @@ const EditTask = (props) => {
         setTimeInputValue(event.target.value);
     };
 
+    const postEditTask = () => {
+        fetch(`http://127.0.0.1:8000/tasks/EditTask`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(editTask),
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.log(error))
+    }
 
     return (
         <div className="task-form-wrapper">
@@ -28,10 +40,11 @@ const EditTask = (props) => {
                            onChange={(event) => setEditTask({...editTask, content: event.target.value})}
                            className="task-form-input"/>
                     <h6>Date</h6>
-                    <input placeholder="choose a date" defaultValue={editTask.assigned_date.slice(0, 10)} value={dateInputValue}
+                    <input placeholder="choose a date" defaultValue={editTask.deadline_date.slice(0, 10)}
+                           value={dateInputValue}
                            onChange={handleDateInputChange} type="date" className="task-form-input"/>
                     <h6>Time</h6>
-                    <input placeholder="choose a date" defaultValue={editTask.assigned_date.slice(11, 16)} type="time"
+                    <input placeholder="choose a date" defaultValue={editTask.deadline_date.slice(11, 16)} type="time"
                            onChange={handleTimeInputChange} className="task-form-input"/>
                     <h6>Priority</h6>
                     <div className="task-priority">
@@ -47,20 +60,11 @@ const EditTask = (props) => {
                     </div>
                 </div>
                 <button onClick={() => {
-
                     setEditTask({...editTask, date: `${dateInputValue} ${timeInputValue}`});
-                    if (editTask.content !== '' && editTask.priority !== '' && editTask.date) {
-
-                        props.setTaskList(props.taskList.map((element) => {
-                            if (element.id === props.currentTaskId) {
-                                return editTask
-                            } else {
-                                return element
-                            }
-                        }))
-                        props.toggle()
-                    } else alert('Check forms')
-                }}>Send
+                    postEditTask()
+                    props.getCreatedTasks()
+                    props.toggle()
+                    }}>Send
                 </button>
             </div>
         </div>
