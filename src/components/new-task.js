@@ -26,7 +26,7 @@ const NewTask = (props) => {
     };
 
 
-    const postNewTask = () => {
+    const postNewTask = async () => {
         fetch(`http://127.0.0.1:8000/tasks/NewTask`, {
             method: 'POST',
             headers: {

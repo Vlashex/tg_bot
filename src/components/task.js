@@ -22,7 +22,7 @@ const Task = (props) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(props.task.id),
+            body: JSON.stringify(props.task.id, props.task.status),
         })
             .then(response => response.json())
             .then(data => console.log(data))

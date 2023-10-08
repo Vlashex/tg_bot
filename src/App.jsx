@@ -2,27 +2,50 @@ import './App.css';
 import './user-list.css'
 import Task from './components/task'
 import {useThemeParams} from '@vkruglikov/react-telegram-web-app';
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import NewTask from "./components/new-task";
 import EditTask from "./components/edit-task";
 import DelegateTask from "./components/delegate-task";
+import { useTelegram } from "lib/TelegramProvider";
 
 function App() {
 
+    const currentUserName = window.Telegram.WebApp.initData.username || 'user1'
 
     const getCreatedTasksFunction = async () => {
-        fetch(`http://127.0.0.1:8000/tasks/CreatedTask`)
+        fetch(`http://127.0.0.1:8000/tasks/CreatedTask/?username=${currentUserName}`)
             .then(data => setCreatedTasks(data))
     }
     const getDelegatedTasksFunction = async () => {
-        fetch(`http://127.0.0.1:8000/tasks/DelegatedTasks`)
+        fetch(`http://127.0.0.1:8000/tasks/DelegatedTasks/?username=${currentUserName}`)
             .then(data => setReceivedTasks(data))
     }
     const getReceivedTasksFunction = async () => {
-        fetch(`http://127.0.0.1:8000/tasks/ReceivedTasks`)
+        fetch(`http://127.0.0.1:8000/tasks/ReceivedTasks/?username=${currentUserName}`)
             .then(data => setDelegatedTasks(data))
     }
+    const setNewUserFunction = async () => {
+        fetch(`http://127.0.0.1:8000/users/Create`,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(currentUserName)
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.log(error))
+    }
 
+    const { webApp } = useTelegram();
+    const [isFirstOpening, setIsFirstOpening] = useState(true);
+
+    useEffect(() => {
+        if (isFirstOpening && webApp) {
+            setIsFirstOpening(false);
+            setNewUserFunction()
+        }
+    }, [webApp, isFirstOpening]);
 
     const [themeParams] = useThemeParams();
 
@@ -116,9 +139,7 @@ function App() {
                         toggle={() => setNewTask(!isNewTask)}
                         getCreatedTasks={()=>getCreatedTasksFunction()}
                         Id={chosenTasksId}
-                        username={
-                            createdTasks.filter((element)=>{return element.id===chosenTasksId}).delegated_to_username
-                        }
+                        username={currentUserName}
                     /> : null}
 
                     {isEditTask ? <EditTask
