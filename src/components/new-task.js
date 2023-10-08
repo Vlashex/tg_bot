@@ -4,12 +4,11 @@ import {formatTime} from './formatTime'
 const NewTask = (props) => {
 
     const [newTask, setNewTask] = useState({
-        "delegated_to_username": [],
-        "created_by_username": props.username,
-        "deadline_date": null,
-        "content": '',
         "status": false,
-        "priority": null
+        "content": '',
+        "deadline_date": null,
+        "priority": null,
+        "created_by_username": props.username
     })
 
     const [dateInputValue, setDateInputValue] = useState('');
@@ -27,7 +26,7 @@ const NewTask = (props) => {
 
 
     const postNewTask = async () => {
-        fetch(`http://127.0.0.1:8000/tasks/NewTask`, {
+        fetch(`http://127.0.0.1:8000/tasks/NewTask/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

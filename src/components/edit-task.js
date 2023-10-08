@@ -3,7 +3,14 @@ import React, {useState} from 'react';
 
 const EditTask = (props) => {
 
-    const [editTask, setEditTask] = useState(props.task)
+    const [editTask, setEditTask] = useState({
+        "task_id": props.task.id,
+        "status": props.task.status,
+        "content": props.task.content,
+        "deadline_date": props.task.deadline_date,
+        "priority": props.task.priority
+
+    })
 
     const [dateInputValue, setDateInputValue] = useState();
     const [timeInputValue, setTimeInputValue] = useState();

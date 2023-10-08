@@ -4,14 +4,13 @@ const DelegateTask = (props) => {
 
 
     const [inputValue, setInputValue] = useState('');
-    const [userNames, setUserNames] = useState(props.username)
 
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
     };
 
     const postDelegateToUsername = (name) => {
-        fetch(`http://127.0.0.1:8000/tasks/DelegateToUsername`, {
+        fetch(`http://127.0.0.1:8000/tasks/DelegateToUsername/?task_id=${props.Id}&username=${name}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -32,30 +31,9 @@ const DelegateTask = (props) => {
             }} className="hiden-exit"/>
             <div className="task-form">
                 <div className="task-form-inner">
-                    {
-                        props.task.username.map((element) => {
-                            const ID = element
-                            return (
-                                <div key={element} className="user">
-                                    <img src={`https://t.me/i/userpic/320/${element}.jpg`} alt="IMG"/>
-                                    <p>{element}</p>
-                                    <button onClick={() => {
-                                        postDelegateToUsername(props.task.username.filter((element)=>{return element!==ID}))
-                                    }}>Del
-                                    </button>
-                                </div>
-                            )
-                        })
-                    }
                     <div className="user">
+                        <img src={`https://t.me/i/userpic/320/${inputValue}.jpg`} alt="IMG"/>
                         <input value={inputValue} onChange={handleInputChange} placeholder="username" type="text"/>
-                        <button onClick={() => {
-                            if (inputValue !== '') {
-                                setUserNames(userNames => [...userNames, inputValue])
-                            }
-                            setInputValue('')
-                        }}>Add
-                        </button>
                     </div>
                 </div>
                 <button onClick={() => {

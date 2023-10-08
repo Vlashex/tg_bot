@@ -1,19 +1,18 @@
 import './App.css';
 import './user-list.css'
 import Task from './components/task'
-import {useThemeParams} from '@vkruglikov/react-telegram-web-app';
+import {useThemeParams, useWebApp} from '@vkruglikov/react-telegram-web-app';
 import React, {useState, useEffect} from 'react'
 import NewTask from "./components/new-task";
 import EditTask from "./components/edit-task";
 import DelegateTask from "./components/delegate-task";
-import { useTelegram } from "lib/TelegramProvider";
 
 function App() {
 
-    const currentUserName = window.Telegram.WebApp.initData.username || 'user1'
+    const currentUserName = useWebApp().initData.username || 'user1'
 
     const getCreatedTasksFunction = async () => {
-        fetch(`http://127.0.0.1:8000/tasks/CreatedTask/?username=${currentUserName}`)
+        fetch(`http://127.0.0.1:8000/tasks/CreatedTasks/?username=${currentUserName}`)
             .then(data => setCreatedTasks(data))
     }
     const getDelegatedTasksFunction = async () => {
@@ -25,7 +24,7 @@ function App() {
             .then(data => setDelegatedTasks(data))
     }
     const setNewUserFunction = async () => {
-        fetch(`http://127.0.0.1:8000/users/Create`,{
+        fetch(`http://127.0.0.1:8000/users/Create/?username=${currentUserName}`,{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -37,15 +36,14 @@ function App() {
             .catch(error => console.log(error))
     }
 
-    const { webApp } = useTelegram();
     const [isFirstOpening, setIsFirstOpening] = useState(true);
 
     useEffect(() => {
-        if (isFirstOpening && webApp) {
+        if (isFirstOpening) {
             setIsFirstOpening(false);
             setNewUserFunction()
         }
-    }, [webApp, isFirstOpening]);
+    }, [isFirstOpening]);
 
     const [themeParams] = useThemeParams();
 
@@ -69,7 +67,7 @@ function App() {
     const [chosenTasksId, setChosenTaskId] = useState('')
 
 
-    const renderTast = (element, isImgVisible) => {
+    const renderTast = (element) => {
         return (<Task
             key={element.task_id}
             task={element}
@@ -125,13 +123,13 @@ function App() {
                 <div>
                     <div className="task-list">
                         {
-                            whatTabSelected === 1 ? createdTasks.map((element) => renderTast(element, false)) : null
+                            ((whatTabSelected === 1)&&createdTasks !== []) ? createdTasks.map((element) => renderTast(element, false)) : null
                         }
                         {
-                            whatTabSelected === 2 ? delegatedTasks.map((element) => renderTast(element, true)) : null
+                            ((whatTabSelected === 2)&&createdTasks !== []) ? delegatedTasks.map((element) => renderTast(element, true)) : null
                         }
                         {
-                            whatTabSelected === 3 ? receivedTasks.map((element) => renderTast(element, true)) : null
+                            ((whatTabSelected === 3)&&createdTasks !== []) ? receivedTasks.map((element) => renderTast(element, true)) : null
                         }
                     </div>
 
@@ -144,7 +142,6 @@ function App() {
 
                     {isEditTask ? <EditTask
                         toggle={() => setEditTask(!isEditTask)}
-                        Id={chosenTasksId}
                         getCreatedTasks={()=>getCreatedTasksFunction()}
                         task={createdTasks.filter((element)=>{return element.id===chosenTasksId})}
 
@@ -156,9 +153,7 @@ function App() {
                         Id={chosenTasksId}
                         getCreatedTasks={()=>getCreatedTasksFunction()}
                         getDelegatedTasks={()=>getDelegatedTasksFunction()}
-                        username={
-                            createdTasks.filter((element)=>{return element.id===chosenTasksId}).delegated_to_username
-                        }
+
                     /> : null}
 
 

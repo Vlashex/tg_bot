@@ -5,7 +5,7 @@ import {exactTime} from "./formatTime";
 const Task = (props) => {
 
     const postDelete = () => {
-        fetch(`http://127.0.0.1:8000/tasks/Delete`, {
+        fetch(`http://127.0.0.1:8000/tasks/Delete/?task_id=${props.task.id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -17,7 +17,7 @@ const Task = (props) => {
             .catch(error => console.log(error))
     }
     const postStatus = () => {
-        fetch(`http://127.0.0.1:8000/tasks/Status`, {
+        fetch(`http://127.0.0.1:8000/tasks/Status/?task_id=${props.task.id}&status=${props.task.status}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -49,10 +49,14 @@ const Task = (props) => {
             <div className="task-inner">
                 {props.isImageVisible ?
                     <img src={
-                        props.whatTabSelected === 1 ? null : `https://t.me/i/userpic/320/${props.task.created_by_username}.jpg`
+                        props.whatTabSelected === 1 ? null : (
+                            props.whatTabSelected === 2
+                                ? `https://t.me/i/userpic/320/${props.task.delegated_to_username}.jpg`
+                                : `https://t.me/i/userpic/320/${props.task.created_by_username}.jpg`
+                        )
                     } alt=""/>
                     : null}
-                <div className="task-priority"/>
+                <div style={props.task.priority===1?{background: "#79C063"}:props.task.priority===2?{background: "#D7B258"}:{background: "#E57770"}} className="task-priority"/>
                 <div>
                     <div>
                         <p>{
