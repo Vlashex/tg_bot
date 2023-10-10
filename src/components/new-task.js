@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {formatTime} from './formatTime'
 
 
+
 const NewTask = (props) => {
 
     //create a state that includes an object with values ​​for the new task

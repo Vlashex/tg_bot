@@ -3,6 +3,7 @@ import './task.scss'
 import {exactTime} from "./formatTime";
 
 
+
 const Task = (props) => {
 
     //create a function that will tell the backend to delete a task with id = props.task.task_id
