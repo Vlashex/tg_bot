@@ -1,0 +1,4 @@
+{
+  "server_ip_load": "http://localhost:8000",
+  "test_username": "user1"
+}
